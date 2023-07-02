@@ -27,21 +27,42 @@ from torch import optim
 from dataset import AFO_Dataset
 
 
+# define function for argparser
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--batch_size', type=int, default=1)
+    parser.add_argument('--epochs', type=int, default=50)
+
+    parser.add_argument('--resume', type=bool, default=False)
+    parser.add_argument('--model_wts', type=str, default=None)
+    parser.add_argument('--data_dir', type=str, default='../data')
+    parser.add_argument('--log_dir', type=str, default='../logs')
+
+    parser.add_argument('--perloss', type=bool, default=True)
+    parser.add_argument('--edgeloss', type=bool, default=True)
+    parser.add_argument('--fftloss', type=bool, default=True)
+
+    parser.add_argument('--groups', type=int, default=3)
+    parser.add_argument('--blocks', type=int, default=16)
+
+    return parser.parse_args()
+
+
 def lr_schedule_cosdecay(t,T,init_lr=1e-4):
     lr=0.5*(1+math.cos(t*math.pi/T))*init_lr
     return lr
 
-def train(net,train_loader,test_loader,optim,criterion, epochs, resume=False):
+def train(net,train_loader,test_loader,optim,criterion,args):
     losses=[]
     start_step=0
-    T=epochs
+    T=args.epochs
     max_ssim=0
     max_psnr=0
     ssims=[]
     psnrs=[]
-    if resume:
-        print(f'resume from {model_dir}')
-        ckp=torch.load(model_dir)
+    if args.resume:
+        print(f'resume from {args.model_wts}')
+        ckp=torch.load(args.model_wts)
         losses=ckp['losses']
         net.load_state_dict(ckp['model'])
         start_step=ckp['step']
@@ -82,12 +103,12 @@ def train(net,train_loader,test_loader,optim,criterion, epochs, resume=False):
             losses.append(loss.item())
         print(f'\rtrain loss : {loss.item():.5f}| step :{step}/{T}|lr :{lr :.7f} |time_used :{(time.time()-start_time)/60 :.1f}',end='',flush=True)
 
-#         #with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
-#         #	writer.add_scalar('data/loss',loss,step)
+#         with SummaryWriter(logdir=log_dir,comment=log_dir) as writer:
+#         	writer.add_scalar('data/loss',loss,step)
 
         if step % 1 ==0 :
             with torch.no_grad():
-                ssim_eval,psnr_eval=test(net,test_loader, max_psnr,max_ssim,step)
+                ssim_eval,psnr_eval=test(net,test_loader)
 
             print(f'\nstep :{step} |ssim:{ssim_eval:.4f}| psnr:{psnr_eval:.4f}')
 
@@ -112,14 +133,10 @@ def train(net,train_loader,test_loader,optim,criterion, epochs, resume=False):
                             'psnrs':psnrs,
                             'losses':losses,
                             'model':net.state_dict()
-                },f'/home/achleshwar/lvrnet/weights/LPEF_Epoch{step}.pth')
+                },f'{args.log_dir}/LPEF_Epoch{step}.pth')   #LPEF signifies model trained with L1+perceptual loss+edge loss+fft loss
                 print(f'\n model saved at step :{step}| max_psnr:{max_psnr:.4f}|max_ssim:{max_ssim:.4f}')
 
-#     np.save(f'./numpy_files/{model_name}_{opt.steps}_losses.npy',losses)
-#     np.save(f'./numpy_files/{model_name}_{opt.steps}_ssims.npy',ssims)
-#     np.save(f'./numpy_files/{model_name}_{opt.steps}_psnrs.npy',psnrs)
-
-def test(net,test_loader,max_psnr,max_ssim,step):
+def test(net,test_loader):
 	net.eval()
 	torch.cuda.empty_cache()
 	ssims=[]
@@ -128,7 +145,6 @@ def test(net,test_loader,max_psnr,max_ssim,step):
 	for i ,(inputs,targets, _) in enumerate(test_loader):
 		inputs=inputs.to(device);targets=targets.to(device)
 		pred=net(inputs)
-		# # print(pred)
 		# tfs.ToPILImage()(torch.squeeze(targets.cpu())).save('111.png')
 		# vutils.save_image(targets.cpu(),'target.png')
 		# vutils.save_image(pred.cpu(),'pred.png')
@@ -145,14 +161,16 @@ def test(net,test_loader,max_psnr,max_ssim,step):
 
 
 if __name__=="__main__":
-    
-    path='/home/achleshwar/lvrnet/data/train'#path to your 'data' folder
-    train_data = AFO_Dataset(path,train=True, size=200) # size here refers to the crop_size
-    train_loader=DataLoader(train_data,batch_size=1,shuffle=True)
 
-    path='/home/achleshwar/lvrnet/data/test'#path to your 'data' folder
+    args = parse_args()
+    
+    path = f'{args.data_dir}/train'#path to your 'data' folder
+    train_data = AFO_Dataset(path,train=True, size=200) # size here refers to the crop_size
+    train_loader=DataLoader(train_data,batch_size=args.batch_size,shuffle=True)
+
+    path = f'{args.data_dir}/test'#path to your 'data' folder
     test_data = AFO_Dataset(path,train=False, size=200)
-    test_loader=DataLoader(test_data,batch_size=1,shuffle=False)
+    test_loader=DataLoader(test_data,batch_size=args.batch_size,shuffle=False)
 
     # fig = plt.figure(figsize = (20,20))
     # for i in range(4):
@@ -168,23 +186,23 @@ if __name__=="__main__":
     ## Train Model###
     #################
     models_={
-        'ffa':FFA(gps=3,blocks=16),
+        'lvrnet':LVRNet(gps=args.groups,blocks=args.blocks),
     }
     loaders_={
         'train':train_loader,
         'test':test_loader
     }
 
-    net=models_['ffa']
+    net=models_['lvrnet']
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     net=net.to(device)
     if device=='cuda':
         net=torch.nn.DataParallel(net)
         cudnn.benchmark=True
 
-    perloss = True
-    edgeloss = True
-    fftloss = True
+    perloss = args.perloss
+    edgeloss = args.edgeloss
+    fftloss = args.fftloss
     criterion = []
     criterion.append(nn.L1Loss().to(device))
     if perloss:
@@ -201,5 +219,4 @@ if __name__=="__main__":
     optimizer = optim.Adam(params=filter(lambda x: x.requires_grad, net.parameters()),lr=1e-4, betas = (0.9, 0.999), eps=1e-08)
     optimizer.zero_grad()
 
-    epochs = 50
-    train(net,train_loader,test_loader,optimizer,criterion, epochs)
+    train(net,train_loader,test_loader,optimizer,criterion,args)

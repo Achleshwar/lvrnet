@@ -46,6 +46,9 @@ class SimpleGate(nn.Module):
         return x1 * x2
 
 class NAFBlock(nn.Module):
+    """
+    Please refer Figure 3 in the paper. 
+    """
     def __init__(self, c, DW_Expand=2, FFN_Expand=2, drop_out_rate=0.):
         super().__init__()
         dw_channel = c * DW_Expand
@@ -101,6 +104,10 @@ class NAFBlock(nn.Module):
         return y + x * self.gamma
     
 class LAN(nn.Module):
+    """
+    This is implementation of Level Attention Module. 
+    Please refer Figure 7 in the paper. 
+    """
     def __init__(self, input_shape):
         super().__init__()
         self.N, self.D, self.C, self.H, self.W = input_shape
@@ -130,15 +137,18 @@ class Group(nn.Module):
         res += x
         return res
     
-class FFA(nn.Module):
+class LVRNet(nn.Module):
+    """"
+    This is complete implementation of our entire network. 
+    Please refer Figure 2 in the paper. 
+    """
     def __init__(self,gps,blocks,conv=default_conv, bs=1):
-        super(FFA, self).__init__()
+        super(LVRNet, self).__init__()
         self.gps=gps
         self.dim=32
         kernel_size=3
         self.batch_size = bs 
-#         self.size = (200,200) #remove hard coding
-        self.size = (256,456) #remove hard coding
+        self.size = (256,456) #TODO remove hard coded size
         pre_process = [conv(3, self.dim, kernel_size)]
 #         assert self.gps==3
         self.g1= Group(conv, self.dim, kernel_size,blocks=blocks)
