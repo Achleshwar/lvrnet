@@ -1,7 +1,7 @@
 # LVRNet: Lightweight Image Restoration for Aerial Images under Low Visibility
 
 
-[paper](https://arxiv.org/pdf/2301.05434.pdf) | [dataset]([https://github.com/Achleshwar/lvrnet](https://drive.google.com/drive/folders/1j6iH-v0ZAWjxQxRdxXad1T1H02ogmjbm?usp=sharing)) | [demo](https://github.com/Achleshwar/lvrnet/blob/main/src/lvrnet-notebook.ipynb) | [slides](https://docs.google.com/presentation/d/1jRg8nC07neuUNMKA9Iq62k9DVo-yGxUIzDsVMeecQMc/edit?usp=sharing) | [poster](https://drive.google.com/file/d/1lQUzXrsCRERWxrP9qUomC_-R_rfD92-t/view?usp=sharing) | [code](https://github.com/Achleshwar/lvrnet) | [webpage](https://esha1302.github.io/lvrnet.github.io/)
+[paper](https://arxiv.org/pdf/2301.05434.pdf) | [dataset](https://drive.google.com/drive/folders/1j6iH-v0ZAWjxQxRdxXad1T1H02ogmjbm?usp=sharing) | [demo](https://github.com/Achleshwar/lvrnet/blob/main/src/lvrnet-notebook.ipynb) | [slides](https://docs.google.com/presentation/d/1jRg8nC07neuUNMKA9Iq62k9DVo-yGxUIzDsVMeecQMc/edit?usp=sharing) | [poster](https://drive.google.com/file/d/1lQUzXrsCRERWxrP9qUomC_-R_rfD92-t/view?usp=sharing) | [code](https://github.com/Achleshwar/lvrnet) | [webpage](https://esha1302.github.io/lvrnet.github.io/)
 
 *AAAI 2023 Student Abstract and Poster Program Submission*
 
