@@ -1,7 +1,7 @@
 # LVRNet: Lightweight Image Restoration for Aerial Images under Low Visibility
 
 
-[paper](https://arxiv.org/pdf/2301.05434.pdf) | [dataset](https://github.com/Achleshwar/lvrnet) | [demo](https://github.com/Achleshwar/lvrnet/blob/main/src/lvrnet-notebook.ipynb) | [slides](https://docs.google.com/presentation/d/1jRg8nC07neuUNMKA9Iq62k9DVo-yGxUIzDsVMeecQMc/edit?usp=sharing) | [poster](https://drive.google.com/file/d/1lQUzXrsCRERWxrP9qUomC_-R_rfD92-t/view?usp=sharing) | [code](https://github.com/Achleshwar/lvrnet)
+[paper](https://arxiv.org/pdf/2301.05434.pdf) | [dataset](https://github.com/Achleshwar/lvrnet) | [demo](https://github.com/Achleshwar/lvrnet/blob/main/src/lvrnet-notebook.ipynb) | [slides](https://docs.google.com/presentation/d/1jRg8nC07neuUNMKA9Iq62k9DVo-yGxUIzDsVMeecQMc/edit?usp=sharing) | [poster](https://drive.google.com/file/d/1lQUzXrsCRERWxrP9qUomC_-R_rfD92-t/view?usp=sharing) | [code](https://github.com/Achleshwar/lvrnet) | [webpage](https://esha1302.github.io/lvrnet.github.io/)
 
 *AAAI 2023 Student Abstract and Poster Program Submission*
 
@@ -10,7 +10,6 @@ LVRNet, short for Low-Visibility Restoration Network, is a method that can effec
 high-quality images from degraded images taken in poor visual conditions. Although we have tested 
 our work for two degrading factors combined: low-light and haze, you can use this codebase
 and run experiments for other degrading factors as well using the instructions given below.
-If you're interested in this work, please check our [webpage](https://esha1302.github.io/lvrnet.github.io/) for more information.
 
 
 ## Method Overview
