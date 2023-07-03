@@ -62,5 +62,5 @@ We would like to thank the authors of [FFANet](https://github.com/zhilin007/FFA-
 
 ## TODOs
 - [ ] Add results on OOD images
-- [ ] Add link to dataset
-- [ ] Add link to project page
+- [x] Add link to dataset
+- [x] Add link to project page
